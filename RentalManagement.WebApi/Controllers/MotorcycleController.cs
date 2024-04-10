@@ -1,6 +1,9 @@
 ﻿using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using RentalManagement.Application.QueryStack.Motorcycle;
 using RentalManagement.Domain.Request;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,26 +15,26 @@ namespace RentalManagement.WebApi.Controllers
     {
         private readonly IBus _bus;
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IMediator _mediator;
 
-        public MotorcycleController(IBus bus, IPublishEndpoint publishEndpoint)
+        public MotorcycleController(IBus bus, IPublishEndpoint publishEndpoint, IMediator mediator)
         {
             _bus = bus;
             _publishEndpoint = publishEndpoint;
-
-        }
-
-        // GET: api/<MotorcycleController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
+            _mediator = mediator;
         }
 
         // GET api/<MotorcycleController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Get(Guid? id, string model, CancellationToken token = default)
         {
-            return "value";
+            var filter = new MotorcycleQuery { Id = id , Model = model};
+            _ = new MotorcycleQueryCustomFilter().Process(filter, token);
+
+            var response = await _mediator.Send(filter);
+            return response is null ? NotFound() : Ok(response);
         }
 
         // POST api/<MotorcycleController>

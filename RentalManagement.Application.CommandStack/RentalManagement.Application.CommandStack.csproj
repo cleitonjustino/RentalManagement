@@ -9,10 +9,12 @@
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="8.2.0" />
     <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RentalManagement.Domain\RentalManagement.Domain.csproj" />
+    <ProjectReference Include="..\RentalManagement.Infrastructure\RentalManagement.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

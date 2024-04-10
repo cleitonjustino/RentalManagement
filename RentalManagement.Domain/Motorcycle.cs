@@ -1,16 +1,23 @@
-﻿using RentalManagement.Domain.Common;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using RentalManagement.Domain.Common;
 using RentalManagement.Domain.Constants;
 
 namespace RentalManagement.Domain
 {
     public class Motorcycle
-    {
-        public Motorcycle() => DateRegister = DateTimeOffset.Now;
-
+    {     
+        [BsonElement("_id")]
+        [JsonProperty("_id")]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public Guid Id { get; private set; }
         public int Year { get; private set; }
         public string Model { get; private set; }
         public string PlateNumber { get; private set; }
+
+        [BsonRepresentation(BsonType.String)]
         public DateTimeOffset DateRegister { get; private set; }
 
         public class Builder
@@ -20,6 +27,7 @@ namespace RentalManagement.Domain
             public Builder SetId()
             {
                 _entity.Id = Guid.NewGuid();
+                _entity.DateRegister = DateTimeOffset.Now;
                 return this;
             }
 
@@ -39,7 +47,7 @@ namespace RentalManagement.Domain
                     throw new ValidationException(new ValidationItem
                     { Message = Messages.InvalidModel });
 
-                _entity.Model = model;
+                _entity.Model = model.ToLower();
                 return this;
             }
 
@@ -49,7 +57,7 @@ namespace RentalManagement.Domain
                     throw new ValidationException(new ValidationItem
                     { Message = Messages.InvalidPlateNumber });
 
-                _entity.PlateNumber = plate;
+                _entity.PlateNumber = plate.ToUpper();
                 return this;
             }
 

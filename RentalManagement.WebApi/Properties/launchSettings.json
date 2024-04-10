@@ -6,6 +6,12 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+
+      },
+      "DataBase": {
+        "CollectionName": "Motorcycle",
+        "ConnectionString": "cleiton:479114@localhost:27017",
+        "DatabaseName": "local"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5255"

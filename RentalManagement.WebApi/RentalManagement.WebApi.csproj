@@ -18,7 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RentalManagement.Application.CommandStack\RentalManagement.Application.CommandStack.csproj" />
+    <ProjectReference Include="..\RentalManagement.Application.QueryStack\RentalManagement.Application.QueryStack.csproj" />
     <ProjectReference Include="..\RentalManagement.Domain\RentalManagement.Domain.csproj" />
+    <ProjectReference Include="..\RentalManagement.Infrastructure\RentalManagement.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

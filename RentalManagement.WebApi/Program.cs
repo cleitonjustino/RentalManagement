@@ -1,9 +1,16 @@
 using MassTransit;
 using MediatR;
+using MediatR.Pipeline;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using MongoFramework;
 using RentalManagement.Application.CommandStack.Consumers;
 using RentalManagement.Application.CommandStack.Motorcyle;
+using RentalManagement.Application.QueryStack.Motorcycle;
 using RentalManagement.Domain.Request;
+using RentalManagement.Infrastructure;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,16 +60,22 @@ builder.Services.AddMassTransit(config =>
             ep.ConfigureConsumer<MotorcycleConsumer>(context);
         });
     });
-
-
-    //config.UsingInMemory((context, cfg) =>
-    //{
-    //    cfg.ConfigureEndpoints(context);
-    //});
 });
 
-builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleRequest, MotorcycleResponse>), typeof(MotorcycleRequestHandler));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+    cfg.Lifetime = ServiceLifetime.Scoped;
+});
 
+builder.Services.AddTransient(typeof(IRequestPreProcessor<MotorcycleQuery>), typeof(MotorcycleQueryCustomFilter));
+builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleRequest, MotorcycleResponse>), typeof(MotorcycleRequestHandler));
+builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleQuery, List<MotorcycleReadModel>>), typeof(MotorcycleQueryHandler));
+
+builder.Services.AddTransient<IMongoDbConnection>(s => MongoDbConnection.FromUrl(new MongoDB.Driver.MongoUrl("mongodb://cleiton:479114@localhost:27017/local?authSource=admin")));
+builder.Services.AddTransient<RentalDbContext>();
+
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DataBase"));
 
 builder.Services.AddSwaggerGen();
 
