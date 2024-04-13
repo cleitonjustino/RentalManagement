@@ -12,4 +12,5 @@ namespace RentalManagement.Domain.Common
             Errors = errors;
         }
     }
+
 }

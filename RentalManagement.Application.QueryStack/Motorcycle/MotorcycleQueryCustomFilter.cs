@@ -24,8 +24,18 @@ namespace RentalManagement.Application.QueryStack.Motorcycle
 
             filterExp = FilterById(request, filterExp);
             filterExp = FilterByModel(request, filterExp);
+            filterExp = FilterByPlate(request, filterExp);
 
             return filterExp;
+        }
+
+        private Expression<Func<Domain.Motorcycle, bool>> FilterByPlate(MotorcycleQuery request, Expression<Func<Domain.Motorcycle, bool>> expression)
+        {
+            if (!string.IsNullOrWhiteSpace(request.Plate))
+            {
+                expression = expression.AndAlso(x => x.PlateNumber.ToLower() == request.Plate.ToLower());
+            }
+            return expression;
         }
 
         private Expression<Func<Domain.Motorcycle, bool>> FilterByModel(MotorcycleQuery request, Expression<Func<Domain.Motorcycle, bool>> expression)
@@ -34,18 +44,15 @@ namespace RentalManagement.Application.QueryStack.Motorcycle
             {               
                 expression = expression.AndAlso(x => x.Model.ToLower() == request.Model.ToLower());
             }
-            return expression; ;
+            return expression; 
         }
 
         private static Expression<Func<Domain.Motorcycle, bool>> FilterById(MotorcycleQuery request,
             Expression<Func<Domain.Motorcycle, bool>> expression)
         {
             if (request.Id is not null && request.Id != Guid.Empty)
-            {
-                var bytes = GuidConverter.ToBytes(request.Id.Value, GuidRepresentation.PythonLegacy);
-                var csuuid = new Guid(bytes);
-
-                expression = expression.AndAlso(x => x.Id == csuuid);
+            {        
+                expression = expression.AndAlso(x => x.Id == request.Id);
             }
             return expression;
         }

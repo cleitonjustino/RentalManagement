@@ -5,5 +5,6 @@
         public Guid Id { get; set; }
         public string Model { get; set; }
         public DateTimeOffset DateRegister { get; set; }
+        public string PlateNumber { get; set; }
     }
 }

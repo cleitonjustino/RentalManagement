@@ -1,8 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
-using MongoFramework.Linq;
 using RentalManagement.Domain;
 using RentalManagement.Domain.Constants;
 using RentalManagement.Domain.Request;
@@ -41,8 +38,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
                 {
                     Return = "Sucess",
                     Id = motorcycle.Id
-                };
-             
+                };             
             }
             catch (Exception ex)
             {

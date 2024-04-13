@@ -71,6 +71,8 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddTransient(typeof(IRequestPreProcessor<MotorcycleQuery>), typeof(MotorcycleQueryCustomFilter));
 builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleRequest, MotorcycleResponse>), typeof(MotorcycleRequestHandler));
 builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleQuery, List<MotorcycleReadModel>>), typeof(MotorcycleQueryHandler));
+builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleUpdateRequest, MotorcycleUpdateResponse>), typeof(MotorcycleUpdateRequestHandler));
+builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleRemoveRequest, MotorcycleRemoveResponse>), typeof(MotorcycleRemoveRequestHandler));
 
 builder.Services.AddTransient<IMongoDbConnection>(s => MongoDbConnection.FromUrl(new MongoDB.Driver.MongoUrl("mongodb://cleiton:479114@localhost:27017/local?authSource=admin")));
 builder.Services.AddTransient<RentalDbContext>();

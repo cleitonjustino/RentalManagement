@@ -2,7 +2,7 @@
 
 namespace RentalManagement.Domain.Request
 {
-    public class MotorcycleResponse
+    public class MotorcycleUpdateResponse
     {
         public Guid Id { get; set; }
         public string Return { get; set; }

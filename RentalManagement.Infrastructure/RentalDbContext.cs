@@ -13,8 +13,8 @@ namespace RentalManagement.Infrastructure
         public RentalDbContext(IMongoDbConnection connection) : base(connection)
         {
         }
-        public MongoDbSet<Motorcycle> Motorcycle { get; set; }
-        public MongoDbSet<User> User { get; set; }
+        public MongoDbSet<Motorcycle> Motorcycle { get; init; }
+        public MongoDbSet<User> User { get; init; }
     }
 
 }

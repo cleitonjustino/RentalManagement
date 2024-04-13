@@ -20,6 +20,11 @@ namespace RentalManagement.Domain
         [BsonRepresentation(BsonType.String)]
         public DateTimeOffset DateRegister { get; private set; }
 
+        public void ChangePlateNumber(string plate)
+        {
+            PlateNumber = plate;
+        }
+
         public class Builder
         {
             private readonly Motorcycle _entity = new();
