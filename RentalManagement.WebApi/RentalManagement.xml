@@ -78,7 +78,7 @@
              <remarks>
              <example>
              <code>
-                   {
+            {
               "idDeliveryMan": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
               "paymentPlan": 7, -- ACEITA 7, 15 OU 30
               "startDate": "2024-04-15T15:19:33.299Z",
@@ -90,17 +90,16 @@
         </member>
         <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.PostReturnRentAsync(RentalManagement.Domain.Request.ReturnRentMotorcycleRequest)">
              <summary>
-             "Cadastro de ",
+             "Cadastro de retorno aluguel de moto ",
              </summary>
              <returns> "Cadastro de retorno aluguel de moto"</returns>
              <remarks>
              <example>
              <code>
-            {
-              { 
+            { 
                 "idRent": "3fa85f64-5717-4562-b3fc-2c963f66afa6" -- Id do Aluguel da moto,
                 "finalDate": "2024-04-15T15:12:29.857Z"
-              }
+            }
              </code>
              </example>
              </remarks>
@@ -113,10 +112,9 @@
              <remarks>
              <example>
              <code>
-            {
-              { 
+            { 
                  "AAA1212" -- Placa moto            
-              }
+            }
              </code>
              </example>
              </remarks>

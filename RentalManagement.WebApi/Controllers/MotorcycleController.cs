@@ -67,7 +67,7 @@ namespace RentalManagement.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] MotorcycleRequest model)
         {
-            Uri url = new(_configuration.GetSection(QueueMoto).ToString());
+            Uri url = new(_configuration.GetSection(QueueMoto).Value);
 
             var endpoint = await _bus.GetSendEndpoint(url);
             _ = endpoint.Send(model);

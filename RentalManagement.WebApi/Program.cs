@@ -55,25 +55,6 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
-builder.Services.AddMassTransit(config =>
-{
-    config.AddConsumer<MotorcycleConsumer>();
-
-    config.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host("localhost", 5672, "/", h =>
-        {
-            h.Username("guest");
-            h.Password("guest");
-        });
-
-        cfg.ReceiveEndpoint("motorcycle-add", ep =>
-        {
-            ep.ConfigureConsumer<MotorcycleConsumer>(context);
-        });
-    });
-});
-
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblyContaining<Program>();
@@ -103,9 +84,6 @@ builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationRequestBehavior<,>));
 builder.Services.AddScoped<IDomainNotificationContext, DomainNotificationContext>();
 
-//MongoDB
-builder.Services.AddTransient<IMongoDbConnection>(s => MongoDbConnection.FromUrl(new MongoDB.Driver.MongoUrl("mongodb://cleiton:479114@localhost:27017/local?authSource=admin")));
-builder.Services.AddTransient<RentalDbContext>();
 
 //Fluent Validator
 builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RentMotorcycleRequestValidator>());
@@ -123,6 +101,29 @@ builder.Services.AddMinio(builder.Configuration["STORAGE_ACCESS_KEY"], builder.C
 builder.Services.AddMinio(configureClient => configureClient
     .WithEndpoint(new Uri("http://localhost:9000"))
     .WithCredentials(builder.Configuration["STORAGE_ACCESS_KEY"], builder.Configuration["STORAGE_SECRET_KEY"]));
+
+//MongoDB
+builder.Services.AddTransient<IMongoDbConnection>(s => MongoDbConnection.FromUrl(new MongoDB.Driver.MongoUrl(builder.Configuration["ConnectionString"])));
+builder.Services.AddTransient<RentalDbContext>();
+
+builder.Services.AddMassTransit(config =>
+{
+    config.AddConsumer<MotorcycleConsumer>();
+
+    config.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["RabbitMq_Envinronment"], 5672, "/", h =>
+        {
+            h.Username(builder.Configuration["RabbitMq_User"]);
+            h.Password(builder.Configuration["RabbitMq_Password"]);
+        });
+
+        cfg.ReceiveEndpoint("motorcycle-add", ep =>
+        {
+            ep.ConfigureConsumer<MotorcycleConsumer>(context);
+        });
+    });
+});
 
 var app = builder.Build();
 
