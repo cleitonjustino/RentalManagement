@@ -47,12 +47,20 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
                     Id = moto.Id
                 };
             }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation(string.Format(Messages.Failed, ex.Message));
+                return new RentMotorcycleResponse
+                {
+                    Return = $"Error : {ex.Message} ",
+                    Id = Guid.Empty
+                };
+            }
             catch (Exception ex)
             {
                 _logger.LogError(string.Format(Messages.FailedSaveBike, ex.Message));
                 throw;
             }
-
         }
 
         private async Task CheckLicenseIsAllowed()

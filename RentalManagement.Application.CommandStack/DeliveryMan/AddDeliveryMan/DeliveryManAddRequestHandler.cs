@@ -1,5 +1,8 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
 using Microsoft.Extensions.Logging;
+using RentalManagement.Domain;
+using RentalManagement.Domain.Common;
 using RentalManagement.Domain.Constants;
 using RentalManagement.Domain.Request;
 using RentalManagement.Infrastructure;
@@ -21,6 +24,8 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
         {
             try
             {
+                ValidationExistDocuments(request);
+
                 var deliveryMan = new Domain.DeliveryMan.Builder()
                    .SetId()
                    .SetImageLicense(string.Empty)
@@ -35,19 +40,38 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
                 _dbContext.DeliveryMen.Add(deliveryMan);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                _logger.LogInformation(string.Format(Messages.SuccessSaveBike, deliveryMan.Id));
+                _logger.LogInformation(string.Format(Messages.Success, deliveryMan.Id));
 
                 return new DeliveryManAddResponse
                 {
                     Return = "Sucess",
                     Id = deliveryMan.Id
-                };             
+                };
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation(string.Format(Messages.FailedSaveBike, ex.Message));
+
+                return new DeliveryManAddResponse
+                {
+                    Return = $"Error : {ex.Message}",
+                    Id = Guid.Empty
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format(Messages.FailedSaveBike,ex.Message));
+                _logger.LogError(string.Format(Messages.FailedSaveBike, ex.Message));
                 throw;
             }
+        }
+
+        private void ValidationExistDocuments(DeliveryManAddRequest request)
+        {
+            var cnpjExist = _dbContext.DeliveryMen.Any(x => x.Cnpj == request.Cnpj);
+            if (cnpjExist) throw new ValidationException(new ValidationItem { Message = "Cnpj já cadastrado" });
+
+            var cnhExist = _dbContext.DeliveryMen.Any(x => x.NumberLicense == request.NumberLicense);
+            if (cnhExist) throw new ValidationException(new ValidationItem { Message = "CNH já cadastrado" });
         }
     }
 }

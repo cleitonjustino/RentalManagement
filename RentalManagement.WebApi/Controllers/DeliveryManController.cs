@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using MassTransit.SqlTransport;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentalManagement.Application.QueryStack.Motorcycle;
@@ -13,17 +12,19 @@ namespace RentalManagement.WebApi.Controllers
     [ApiController]
     public class DeliveryManController : ControllerBase
     {
-        private readonly IBus _bus;
         private readonly IMediator _mediator;
         private readonly IDomainNotificationContext _notificationContext;
 
-        public DeliveryManController(IBus bus, IMediator mediator, IDomainNotificationContext notificationContext)
+        public DeliveryManController(IMediator mediator, IDomainNotificationContext notificationContext)
         {
-            _bus = bus;
             _mediator = mediator;
             _notificationContext = notificationContext;
         }
 
+        /// <summary>
+        /// "Obtém a lista de motorista cadastarados, podendo ser filtrado por nome",
+        /// </summary>
+        /// <returns> "Obtém a lista de motos cadastarada com possibilidade filtros pelo ID, ou Modelo ou Placa fornecido na URL."</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
@@ -36,6 +37,25 @@ namespace RentalManagement.WebApi.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// "Cadastro de entregadores",
+        /// </summary>
+        /// <returns> "Cadastro de entregadores com sucesso"</returns>
+        /// <remarks>
+        /// <example>
+        /// <code>
+        ///{
+        ///"numberLicense": "numero_carteira_CNH",
+        ///"typeLicense": 1, -- Tipos válidos { 1=A, 2=B, 3=AB}
+        ///"imageLicense": "",
+        ///"cnpj": "cnpj_valido",
+        ///"name": "nome",
+        ///"email": "email_valido",
+        ///"birthday": "data_nascimento_valida"
+        ///}
+        /// </code>
+        /// </example>
+        /// </remarks>
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] DeliveryManAddRequest request)
         {
@@ -51,13 +71,27 @@ namespace RentalManagement.WebApi.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// "Cadastro de entregadores",
+        /// </summary>
+        /// <returns> "Cadastro de CNh de entregadores com sucesso"</returns>
+        /// <remarks>
+        /// <example>
+        /// <code>
+        ///{
+        ///"idDeliveryman": "c1368174-7d2d-4cf1-8290-0f35f625e9b0",
+        ///"file":"arquivoUpload"
+        ///}
+        /// </code>
+        /// </example>
+        /// </remarks>
         [HttpPost("Upload")]
         public async Task<IActionResult> OnPostUploadAsync(Guid idDeliveryman, IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("Arquivo é obrigatório");
 
-            if(file.ContentType != "image/png" || file.ContentType != "image/bmp")
+            if (file.ContentType != "image/png" || file.ContentType != "image/bmp")
                 return BadRequest("Tipo de anexo inválido");
 
             var request = new DeliveryManAddCnhRequest();
@@ -79,23 +113,6 @@ namespace RentalManagement.WebApi.Controllers
             {
                 return StatusCode(500, $"Error occurred: {ex.Message}");
             }
-        }
-
-
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] string plate)
-        {
-            var request = new MotorcycleUpdateRequest { Id = id, PlateNumber = plate };
-            var result = await _mediator.Send(request);
-            return Accepted(result);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var request = new MotorcycleRemoveRequest { Id = id };
-            var result = await _mediator.Send(request);
-            return Accepted(result);
         }
     }
 }

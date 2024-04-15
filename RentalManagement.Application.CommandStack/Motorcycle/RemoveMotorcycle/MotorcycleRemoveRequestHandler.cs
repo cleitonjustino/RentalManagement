@@ -18,7 +18,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
             _logger = logger;
             _dbContext = dbContext;
         }
-         
+
         public async Task<MotorcycleRemoveResponse> Handle(MotorcycleRemoveRequest request, CancellationToken cancellationToken)
         {
             try
@@ -41,8 +41,12 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
             }
             catch (ValidationException ex)
             {
-                _logger.LogError(string.Format(Messages.Failed, ex.Message));
-                throw;
+                _logger.LogInformation(string.Format(Messages.Failed, ex.Message));
+                return new MotorcycleRemoveResponse
+                {
+                    Return = $"Error : {ex.Message} ",
+                    Id = Guid.Empty
+                };
             }
             catch (Exception ex)
             {

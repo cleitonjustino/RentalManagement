@@ -11,16 +11,16 @@ namespace RentalManagement.Domain.Enums
         [Display(Name = "A")]
         [JsonProperty("A")]
         [EnumMember(Value = "A")] 
-        A,
+        A = 1,
         [Description("B")]
         [Display(Name = "B")]
         [JsonProperty("B")]
         [EnumMember(Value = "B")]
-        B,
+        B = 2,
         [Description("AB")]
         [Display(Name = "AB")]
         [JsonProperty("AB")]
         [EnumMember(Value = "AB")]
-        AB 
+        AB = 3
     }
 }

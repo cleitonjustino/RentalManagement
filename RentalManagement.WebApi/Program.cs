@@ -3,6 +3,7 @@ using MassTransit;
 using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Minio;
 using MongoFramework;
@@ -16,6 +17,7 @@ using RentalManagement.Domain.Notification;
 using RentalManagement.Domain.Request;
 using RentalManagement.Infrastructure;
 using RentalManagement.Infrastructure.ExternalServices.Storage;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
@@ -48,7 +50,9 @@ builder.Services.AddSwaggerGen(c =>
                 Url = new Uri("http://opensource.org/licenses/MIT"),
             }
         });
-    c.DescribeAllParametersInCamelCase(); 
+    c.DescribeAllParametersInCamelCase();
+    var xmlFilename = "RentalManagement.xml";
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
 builder.Services.AddMassTransit(config =>
@@ -109,15 +113,11 @@ builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyCont
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DataBase"));
 
-builder.Services.AddSwaggerGen();
-
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Add Minio using the default endpoint
 builder.Services.AddMinio(builder.Configuration["STORAGE_ACCESS_KEY"], builder.Configuration["STORAGE_SECRET_KEY"]);
-
-
 
 // Add Minio using the custom endpoint and configure additional settings for default MinioClient initialization
 builder.Services.AddMinio(configureClient => configureClient

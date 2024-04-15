@@ -26,7 +26,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
         {
             try
             {
-                var deliveryMan = await _dbContext.DeliveryMen.FirstOrDefaultAsync(x => x.Id == request.IdDeliveryMan) ?? throw new ValidationException(new ValidationItem { Message = "Falha ao buscar entregador informado" }); ;
+                var deliveryMan = await _dbContext.DeliveryMen.FirstOrDefaultAsync(x => x.Id == request.IdDeliveryMan) ?? throw new ValidationException(new ValidationItem { Message = "Falha ao buscar entregador informado" }); 
 
                 var idImage = Guid.NewGuid();
 
@@ -42,6 +42,16 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
                 {
                     Return = "Sucess",
                     Id = idImage
+                };
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation(string.Format(Messages.Failed, ex.Message));
+
+                return new DeliveryManAddCnhResponse
+                {
+                    Return = $"Error : {ex.Message}",
+                    Id = Guid.Empty
                 };
             }
             catch (Exception ex)

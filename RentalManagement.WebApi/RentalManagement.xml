@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RentalManagement.WebApi</name>
+    </assembly>
+    <members>
+        <member name="M:RentalManagement.WebApi.Controllers.DeliveryManController.Get(System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            "Obtém a lista de motorista cadastarados, podendo ser filtrado por nome",
+            </summary>
+            <returns> "Obtém a lista de motos cadastarada com possibilidade filtros pelo ID, ou Modelo ou Placa fornecido na URL."</returns>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.DeliveryManController.PostAsync(RentalManagement.Domain.Request.DeliveryManAddRequest)">
+             <summary>
+             "Cadastro de entregadores",
+             </summary>
+             <returns> "Cadastro de entregadores com sucesso"</returns>
+             <remarks>
+             <example>
+             <code>
+            {
+            "numberLicense": "numero_carteira_CNH",
+            "typeLicense": 1, -- Tipos válidos { 1=A, 2=B, 3=AB}
+            "imageLicense": "",
+            "cnpj": "cnpj_valido",
+            "name": "nome",
+            "email": "email_valido",
+            "birthday": "data_nascimento_valida"
+            }
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.DeliveryManController.OnPostUploadAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile)">
+             <summary>
+             "Cadastro de entregadores",
+             </summary>
+             <returns> "Cadastro de CNh de entregadores com sucesso"</returns>
+             <remarks>
+             <example>
+             <code>
+            {
+            "idDeliveryman": "c1368174-7d2d-4cf1-8290-0f35f625e9b0",
+            "file":"arquivoUpload"
+            }
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.Get(System.Nullable{System.Guid},System.String,System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            "Obtém a lista de motos cadastaradas",
+            </summary>
+            <returns> "Obtém a lista de motos cadastarada com possibilidade filtros pelo ID, ou Modelo ou Placa fornecido na URL."</returns>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.PostAsync(RentalManagement.Domain.Request.MotorcycleRequest)">
+             <summary>
+             "Cadastro de motos",
+             </summary>
+             <returns> "Cadastro de moto com sucesso"</returns>
+             <remarks>
+             <example>
+             <code>
+            {
+              "year": 2019,
+              "model": "yamaha",
+              "plateNumber": "AAE1012"
+            }
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.PostRentAsync(RentalManagement.Domain.Request.RentMotorcycleRequest)">
+             <summary>
+             "Cadastro de aluguel motos",
+             </summary>
+             <returns> "Cadastro de aluguel de moto com sucesso"</returns>
+             <remarks>
+             <example>
+             <code>
+                   {
+              "idDeliveryMan": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "paymentPlan": 7, -- ACEITA 7, 15 OU 30
+              "startDate": "2024-04-15T15:19:33.299Z",
+              "expectedDate": "2024-04-15T15:19:33.299Z"
+            }
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.PostReturnRentAsync(RentalManagement.Domain.Request.ReturnRentMotorcycleRequest)">
+             <summary>
+             "Cadastro de ",
+             </summary>
+             <returns> "Cadastro de retorno aluguel de moto"</returns>
+             <remarks>
+             <example>
+             <code>
+            {
+              { 
+                "idRent": "3fa85f64-5717-4562-b3fc-2c963f66afa6" -- Id do Aluguel da moto,
+                "finalDate": "2024-04-15T15:12:29.857Z"
+              }
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.Put(System.Guid,System.String)">
+             <summary>
+             "Atualização de placa de moto ",
+             </summary>
+             <returns> "Atualização de placa de moto"</returns>
+             <remarks>
+             <example>
+             <code>
+            {
+              { 
+                 "AAA1212" -- Placa moto            
+              }
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.Delete(System.Guid)">
+            <summary>
+            "Exclusão de moto através do Id Moto ",
+            </summary>
+        </member>
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.GetRent(System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            "Busca aluguel da moto através do placa"
+            </summary>
+        </member>
+    </members>
+</doc>
