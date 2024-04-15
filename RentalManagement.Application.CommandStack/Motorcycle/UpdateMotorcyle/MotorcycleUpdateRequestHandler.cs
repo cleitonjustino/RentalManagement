@@ -23,7 +23,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
         {
             try
             {
-                var moto = await _dbContext.Motorcycle.FirstOrDefaultAsync(m => m.Id.Equals(request.Id)) ?? throw new ValidationException(new ValidationItem { Message = "Moto não encontrada" });
+                var moto = await _dbContext.Motorcycle.FirstOrDefaultAsync(m => m.Id.Equals(request.Id), cancellationToken: cancellationToken) ?? throw new ValidationException(new ValidationItem { Message = "Moto não encontrada" });
 
                 moto.ChangePlateNumber(request.PlateNumber);
 

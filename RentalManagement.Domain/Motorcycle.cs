@@ -16,13 +16,19 @@ namespace RentalManagement.Domain
         public int Year { get; private set; }
         public string Model { get; private set; }
         public string PlateNumber { get; private set; }
+        public bool Rented { get; private set; }
 
         [BsonRepresentation(BsonType.String)]
-        public DateTimeOffset DateRegister { get; private set; }
+        public DateTimeOffset CreatedAt { get; private set; }
 
         public void ChangePlateNumber(string plate)
         {
             PlateNumber = plate;
+        }
+
+        public void SetRented()
+        {
+            Rented = true;
         }
 
         public class Builder
@@ -32,7 +38,7 @@ namespace RentalManagement.Domain
             public Builder SetId()
             {
                 _entity.Id = Guid.NewGuid();
-                _entity.DateRegister = DateTimeOffset.Now;
+                _entity.CreatedAt = DateTimeOffset.Now;
                 return this;
             }
 

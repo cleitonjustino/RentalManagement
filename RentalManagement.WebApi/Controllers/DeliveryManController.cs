@@ -11,13 +11,13 @@ namespace RentalManagement.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MotorcycleController : ControllerBase
+    public class DeliveryManController : ControllerBase
     {
         private readonly IBus _bus;
         private readonly IMediator _mediator;
         private readonly IDomainNotificationContext _notificationContext;
 
-        public MotorcycleController(IBus bus, IMediator mediator, IDomainNotificationContext notificationContext)
+        public DeliveryManController(IBus bus, IMediator mediator, IDomainNotificationContext notificationContext)
         {
             _bus = bus;
             _mediator = mediator;
@@ -27,28 +27,17 @@ namespace RentalManagement.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        public async Task<IActionResult> Get(Guid? id, string? model, string? plate, int pageSize = 10, int pageNumber = 1, CancellationToken token = default)
+        public async Task<IActionResult> Get(string? name, int pageSize = 10, int pageNumber = 1, CancellationToken token = default)
         {
-            var filter = new MotorcycleQuery { Id = id, Model = model, Plate = plate, PageSize = pageSize, PageNumber = pageNumber };
-            _ = new MotorcycleQueryCustomFilter().Process(filter, token);
+            var filter = new DeliveryManQuery { Name = name, PageSize = pageSize, PageNumber = pageNumber };
+            _ = new DeliveryManQueryCustomFilter().Process(filter, token);
             var result = await _mediator.Send(filter, token);
             Response.AddPaginationHeader(result.CurrentPage, result.PageSize, result.TotalCount, result.TotalPages);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] MotorcycleRequest model)
-        {
-            Uri uri = new("queue:motorcycle-add");
-            var endpoint = await _bus.GetSendEndpoint(uri);
-            _ = endpoint.Send(model);
-
-            return Accepted();
-        }
-
-
-        [HttpPost("RentMoto")]
-        public async Task<IActionResult> PostRentAsync([FromBody] RentMotorcycleRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] DeliveryManAddRequest request)
         {
             var result = await _mediator.Send(request);
 
@@ -60,6 +49,33 @@ namespace RentalManagement.WebApi.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpPost("Upload")]
+        public async Task<IActionResult> OnPostUploadAsync(Guid idDeliveryman, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is required");
+
+            var request = new DeliveryManAddCnhRequest();
+
+            try
+            {
+                using (var fileStream = file.OpenReadStream())
+                {
+                    request.File = fileStream;
+                    request.ContentType = file.ContentType;
+                    request.IdDeliveryMan = idDeliveryman;
+
+                    var result = await _mediator.Send(request);
+                }
+
+                return Ok(new { Url = "a" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error occurred: {ex.Message}");
+            }
         }
 
 

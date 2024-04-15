@@ -1,10 +1,5 @@
 ﻿using MongoFramework;
 using RentalManagement.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RentalManagement.Infrastructure
 {
@@ -15,6 +10,7 @@ namespace RentalManagement.Infrastructure
         }
         public MongoDbSet<Motorcycle> Motorcycle { get; init; }
         public MongoDbSet<User> User { get; init; }
+        public MongoDbSet<DeliveryMan> DeliveryMen { get; init; }
+        public MongoDbSet<RentMotorcycle> RentMotorcycle { get; init; }
     }
-
 }

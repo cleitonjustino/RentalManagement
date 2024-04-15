@@ -1,17 +1,23 @@
+using FluentValidation.AspNetCore;
 using MassTransit;
 using MediatR;
 using MediatR.Pipeline;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
+using Minio;
 using MongoFramework;
 using RentalManagement.Application.CommandStack.Consumers;
+using RentalManagement.Application.CommandStack.DeliveryMan.AddDeliveryMan;
 using RentalManagement.Application.CommandStack.Motorcyle;
+using RentalManagement.Application.QueryStack.Helpers;
 using RentalManagement.Application.QueryStack.Motorcycle;
+using RentalManagement.Application.QueryStack.Plans;
+using RentalManagement.Domain.Notification;
 using RentalManagement.Domain.Request;
 using RentalManagement.Infrastructure;
-using System.Reflection;
+using RentalManagement.Infrastructure.ExternalServices.Storage;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +30,7 @@ builder.Services.AddEndpointsApiExplorer();
 var infoSdk = RuntimeInformation.FrameworkDescription;
 builder.Services.AddSwaggerGen(c =>
 {
+    c.UseInlineDefinitionsForEnums();
     c.SwaggerDoc("v1",
         new OpenApiInfo
         {
@@ -41,6 +48,7 @@ builder.Services.AddSwaggerGen(c =>
                 Url = new Uri("http://opensource.org/licenses/MIT"),
             }
         });
+    c.DescribeAllParametersInCamelCase(); 
 });
 
 builder.Services.AddMassTransit(config =>
@@ -68,18 +76,48 @@ builder.Services.AddMediatR(cfg =>
     cfg.Lifetime = ServiceLifetime.Scoped;
 });
 
-builder.Services.AddTransient(typeof(IRequestPreProcessor<MotorcycleQuery>), typeof(MotorcycleQueryCustomFilter));
-builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleRequest, MotorcycleResponse>), typeof(MotorcycleRequestHandler));
-builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleQuery, List<MotorcycleReadModel>>), typeof(MotorcycleQueryHandler));
-builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleUpdateRequest, MotorcycleUpdateResponse>), typeof(MotorcycleUpdateRequestHandler));
-builder.Services.AddTransient(typeof(IRequestHandler<MotorcycleRemoveRequest, MotorcycleRemoveResponse>), typeof(MotorcycleRemoveRequestHandler));
+builder.Services.AddScoped(typeof(IRequestPreProcessor<MotorcycleQuery>), typeof(MotorcycleQueryCustomFilter));
+builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleRequest, MotorcycleResponse>), typeof(MotorcycleRequestHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleQuery, PagedList<MotorcycleReadModel>>), typeof(MotorcycleQueryHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleUpdateRequest, MotorcycleUpdateResponse>), typeof(MotorcycleUpdateRequestHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleRemoveRequest, MotorcycleRemoveResponse>), typeof(MotorcycleRemoveRequestHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<RentMotorcycleRequest, RentMotorcycleResponse>), typeof(RentMotorcycleRequestHandler));
 
+builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManAddRequest, DeliveryManAddResponse>), typeof(DeliveryManAddRequestHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManQuery, PagedList<DeliveryManReadModel>>), typeof(DeliveryManQueryHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManAddCnhRequest, DeliveryManAddCnhResponse>), typeof(DeliveryManAddCnhRequestHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<PlansQuery, List<string>>), typeof(PlansQueryHandler));
+builder.Services.AddScoped(typeof(IRequestPreProcessor<DeliveryManQuery>), typeof(DeliveryManQueryCustomFilter));
+builder.Services.AddScoped<IStorageService, StorageService>();
+
+
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationRequestBehavior<,>));
+builder.Services.AddScoped<IDomainNotificationContext, DomainNotificationContext>();
+
+//MongoDB
 builder.Services.AddTransient<IMongoDbConnection>(s => MongoDbConnection.FromUrl(new MongoDB.Driver.MongoUrl("mongodb://cleiton:479114@localhost:27017/local?authSource=admin")));
 builder.Services.AddTransient<RentalDbContext>();
+
+//Fluent Validator
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RentMotorcycleRequestValidator>());
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<DeliveryManAddRequestValidator>());
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DataBase"));
 
 builder.Services.AddSwaggerGen();
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// Add Minio using the default endpoint
+builder.Services.AddMinio(builder.Configuration["STORAGE_ACCESS_KEY"], builder.Configuration["STORAGE_SECRET_KEY"]);
+
+
+
+// Add Minio using the custom endpoint and configure additional settings for default MinioClient initialization
+builder.Services.AddMinio(configureClient => configureClient
+    .WithEndpoint(new Uri("http://localhost:9000"))
+    .WithCredentials(builder.Configuration["STORAGE_ACCESS_KEY"], builder.Configuration["STORAGE_SECRET_KEY"]));
 
 var app = builder.Build();
 

@@ -1,6 +1,5 @@
 ﻿using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
 using MongoFramework.Linq;
 using RentalManagement.Domain.Extensions;
 using System.Linq.Expressions;
