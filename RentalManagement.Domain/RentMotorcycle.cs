@@ -1,6 +1,7 @@
 ﻿using RentalManagement.Domain.Common;
 using RentalManagement.Domain.Constants;
 using RentalManagement.Domain.Enums;
+using System.Numerics;
 
 namespace RentalManagement.Domain
 {
@@ -20,38 +21,49 @@ namespace RentalManagement.Domain
         {
             var plans = Plans.ReturnPlans();
 
-            double totalDaysLate = ExpectedDate.Subtract(StartDate).Days;
+            double totalDifferenceDays = TotalDifferenceDays();
 
             if (FinalDate < ExpectedDate)
             {
-                ApplyFineForLatePayment(plans, totalDaysLate);
+                ApplyFineForLatePayment(plans, totalDifferenceDays);
             }
             else if (FinalDate > ExpectedDate)
             {
-                Ticketed = CalculateFineForExceedingExpectedDate(totalDaysLate);
+                Ticketed = CalculateFineForExceedingExpectedDate(totalDifferenceDays);
             }
 
-            return Ticketed + Price;
+            return Ticketed + Price * (int)PaymentPlan;
+        }
+
+        private int TotalDifferenceDays()
+        {
+            var totalDays = FinalDate.Subtract(StartDate).Days;
+            return totalDays - PaymentPlan switch
+            {
+                PaymentPlans.Plan7Days => 7,
+                PaymentPlans.Plan15Days => 15,
+                PaymentPlans.Plan30Days => 30,
+                _ => 0,
+            };
         }
 
         private void ApplyFineForLatePayment(Dictionary<int, double> plans, double totalDaysLate)
         {
-            if (PaymentPlan.Equals(PaymentPlans.Plan7Days))
+            var percentage = PaymentPlan switch
             {
-                ApplyFineForPaymentPlan(plans, totalDaysLate, PaymentPlans.Plan7Days, 0.20);
-            }
-            else if (PaymentPlan.Equals(PaymentPlans.Plan15Days))
-            {
-                ApplyFineForPaymentPlan(plans, totalDaysLate, PaymentPlans.Plan15Days, 0.40);
-            }
+                PaymentPlans.Plan7Days => 0.20,
+                PaymentPlans.Plan15Days => 0.40,
+                _ => 0,
+            };
+
+            ApplyFineForPaymentPlan(plans, totalDaysLate, percentage);
         }
 
-        private void ApplyFineForPaymentPlan(Dictionary<int, double> plans, double totalDaysLate, PaymentPlans paymentPlan, double percentage)
+        private void ApplyFineForPaymentPlan(Dictionary<int, double> plans, double totalDaysLate, double percentage)
         {
-            var plan = plans.GetValueOrDefault((int)paymentPlan);
+            var plan = plans.GetValueOrDefault((int)PaymentPlan);
             double finePercentage = plan * percentage;
             double fineAmount = plan + finePercentage;
-           
             Ticketed = fineAmount * totalDaysLate;
         }
 
