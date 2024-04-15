@@ -25,8 +25,13 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
             {
                 var moto = await _dbContext.Motorcycle.FirstOrDefaultAsync(m => m.Id.Equals(request.Id)) ?? throw new ValidationException(new ValidationItem { Message = "Moto não encontrada" });
 
+                var existRent = await _dbContext.RentMotorcycle.AnyAsync(r => r.PlateNumber.Equals(moto.PlateNumber));
+                if (existRent) throw new ValidationException(new ValidationItem { Message = $"Não é possível excluir a moto {moto.PlateNumber} devido a alugueis vinculoados" });
+
                 _dbContext.Motorcycle.RemoveById(moto.Id);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation("Exclusão Motorcycle com sucesso");
 
                 return new MotorcycleRemoveResponse
                 {
@@ -34,9 +39,14 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
                     Id = moto.Id
                 };
             }
+            catch (ValidationException ex)
+            {
+                _logger.LogError(string.Format(Messages.Failed, ex.Message));
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format(Messages.FailedSaveBike, ex.Message));
+                _logger.LogError(string.Format(Messages.Failed, ex.Message));
                 throw;
             }
 

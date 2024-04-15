@@ -10,41 +10,33 @@ using RentalManagement.Domain;
 
 namespace RentalManagement.Application.CommandStack.Motorcyle
 {
-    public class RentMotorcycleRequestHandler : IRequestHandler<RentMotorcycleRequest, RentMotorcycleResponse>
+    public class ReturnRentMotorcycleRequestHandler : IRequestHandler<ReturnRentMotorcycleRequest, ReturnRentMotorcycleResponse>
     {
-        private readonly ILogger<RentMotorcycleRequestHandler> _logger;
+        private readonly ILogger<ReturnRentMotorcycleRequestHandler> _logger;
         private readonly RentalDbContext _dbContext;
 
-        public RentMotorcycleRequestHandler(ILogger<RentMotorcycleRequestHandler> logger, RentalDbContext dbContext)
+        public ReturnRentMotorcycleRequestHandler(ILogger<ReturnRentMotorcycleRequestHandler> logger, RentalDbContext dbContext)
         {
             _logger = logger;
             _dbContext = dbContext;
         }
 
-        public async Task<RentMotorcycleResponse> Handle(RentMotorcycleRequest request, CancellationToken cancellationToken)
+        public async Task<ReturnRentMotorcycleResponse> Handle(ReturnRentMotorcycleRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var moto = await TakeMotoAvailableAsync(cancellationToken);
+                var plans = Plans.ReturnPlans();
+                var rentMoto = _dbContext.RentMotorcycle.FirstOrDefault(x => x.Id == request.IdRent);
 
-                await CheckLicenseIsAllowed();
-
-                var rentMoto = new RentMotorcycle.Builder()
-                    .PlateNumber(moto.PlateNumber)
-                    .SetStartDate(request.StartDate)
-                    .SetExpectedDate(request.ExpectedDate)
-                    .SetPaymentPlan(request.PaymentPlan)
-                    .Build();
-
-                _dbContext.RentMotorcycle.Add(rentMoto);
-                _dbContext.Motorcycle.Update(moto);
+                rentMoto?.CalculateFine();
+                _dbContext.RentMotorcycle.Update(rentMoto);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return new RentMotorcycleResponse
+                return new ReturnRentMotorcycleResponse
                 {
                     Return = "Sucess",
-                    Id = moto.Id
+                    Id = rentMoto.Id
                 };
             }
             catch (Exception ex)

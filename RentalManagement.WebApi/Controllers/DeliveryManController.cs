@@ -55,7 +55,10 @@ namespace RentalManagement.WebApi.Controllers
         public async Task<IActionResult> OnPostUploadAsync(Guid idDeliveryman, IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("File is required");
+                return BadRequest("Arquivo é obrigatório");
+
+            if(file.ContentType != "image/png" || file.ContentType != "image/bmp")
+                return BadRequest("Tipo de anexo inválido");
 
             var request = new DeliveryManAddCnhRequest();
 

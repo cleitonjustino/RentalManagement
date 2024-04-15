@@ -46,8 +46,7 @@ namespace RentalManagement.WebApi.Controllers
             return Accepted();
         }
 
-
-        [HttpPost("RentMoto")]
+        [HttpPost("Rent")]
         public async Task<IActionResult> PostRentAsync([FromBody] RentMotorcycleRequest request)
         {
             var result = await _mediator.Send(request);
@@ -62,6 +61,20 @@ namespace RentalManagement.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost("ReturnRent")]
+        public async Task<IActionResult> PostReturnRentAsync([FromBody] ReturnRentMotorcycleRequest request)
+        {
+            var result = await _mediator.Send(request);
+
+            if (_notificationContext.HasErrorNotifications)
+            {
+                var notifications = _notificationContext.GetErrorNotifications();
+                var message = string.Join(", ", notifications.Select(x => x.Value));
+                return BadRequest(message);
+            }
+
+            return Ok(result);
+        }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] string plate)
@@ -78,5 +91,18 @@ namespace RentalManagement.WebApi.Controllers
             var result = await _mediator.Send(request);
             return Accepted(result);
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("GetRent")]
+        public async Task<IActionResult> GetRent( string? plate, int pageSize = 10, int pageNumber = 1, CancellationToken token = default)
+        {
+            var filter = new RentMotoQuery { PlateNumber = plate, PageSize = pageSize, PageNumber = pageNumber };
+            _ = new RentMotoQueryCustomFilter().Process(filter, token);
+            var result = await _mediator.Send(filter, token);
+         
+            return Ok(result);
+        }
+
     }
 }

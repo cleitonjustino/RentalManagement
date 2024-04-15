@@ -13,7 +13,53 @@ namespace RentalManagement.Domain
         public DateTimeOffset FinalDate { get; private set; }
         public DateTimeOffset ExpectedDate { get; private set; }
         public DateTimeOffset CreatedAt { get; private set; }
-        public Double Price { get; private set; }
+        public double Price { get; private set; }
+        public double Ticketed { get; private set; }
+
+        public double CalculateFine()
+        {
+            var plans = Plans.ReturnPlans();
+
+            double totalDaysLate = ExpectedDate.Subtract(StartDate).Days;
+
+            if (FinalDate < ExpectedDate)
+            {
+                ApplyFineForLatePayment(plans, totalDaysLate);
+            }
+            else if (FinalDate > ExpectedDate)
+            {
+                Ticketed = CalculateFineForExceedingExpectedDate(totalDaysLate);
+            }
+
+            return Ticketed + Price;
+        }
+
+        private void ApplyFineForLatePayment(Dictionary<int, double> plans, double totalDaysLate)
+        {
+            if (PaymentPlan.Equals(PaymentPlans.Plan7Days))
+            {
+                ApplyFineForPaymentPlan(plans, totalDaysLate, PaymentPlans.Plan7Days, 0.20);
+            }
+            else if (PaymentPlan.Equals(PaymentPlans.Plan15Days))
+            {
+                ApplyFineForPaymentPlan(plans, totalDaysLate, PaymentPlans.Plan15Days, 0.40);
+            }
+        }
+
+        private void ApplyFineForPaymentPlan(Dictionary<int, double> plans, double totalDaysLate, PaymentPlans paymentPlan, double percentage)
+        {
+            var plan = plans.GetValueOrDefault((int)paymentPlan);
+            double finePercentage = plan * percentage;
+            double fineAmount = plan + finePercentage;
+           
+            Ticketed = fineAmount * totalDaysLate;
+        }
+
+        private double CalculateFineForExceedingExpectedDate(double totalDaysLate)
+        {
+            const double defaultFinePerDay = 50.0D;
+            return totalDaysLate * defaultFinePerDay;
+        }
 
         public class Builder
         {
@@ -36,17 +82,17 @@ namespace RentalManagement.Domain
             {
                 _entity.PaymentPlan = paymentPlan;
 
-                if (paymentPlan == PaymentPlans.Plan7Days)
+                switch (paymentPlan)
                 {
-                    _entity.Price = 30D;
-                }
-                else if (paymentPlan == PaymentPlans.Plan15Days)
-                {
-                    _entity.Price = 28D;
-                }
-                else if (paymentPlan == PaymentPlans.Plan30Days)
-                {
-                    _entity.Price = 22D;
+                    case PaymentPlans.Plan7Days:
+                        _entity.Price = 30D;
+                        break;
+                    case PaymentPlans.Plan15Days:
+                        _entity.Price = 28D;
+                        break;
+                    case PaymentPlans.Plan30Days:
+                        _entity.Price = 22D;
+                        break;
                 }
 
                 return this;
@@ -58,24 +104,24 @@ namespace RentalManagement.Domain
                 return this;
             }
 
-            public Builder SetFinalDate(DateTimeOffset dafaFim)
+            public Builder SetExpectedDate(DateTimeOffset expctedDate)
             {
-                _entity.FinalDate = dafaFim;
-                //if (paymentPlan == PaymentPlans.Plan7Days)
-                //{
-                //    _entity.FinalDate = _entity.StartDate.AddDays(7);
-                //}
-                //else if (paymentPlan == PaymentPlans.Plan15Days)
-                //{
-                //    _entity.FinalDate = _entity.StartDate.AddDays(15);
-                //}
-                //else if (paymentPlan == PaymentPlans.Plan30Days)
-                //{
-                //    _entity.FinalDate = _entity.StartDate.AddDays(30);
-                //}
+                _entity.ExpectedDate = expctedDate;
                 return this;
             }
 
+            public Builder SetFinalDate(DateTimeOffset dafaFim)
+            {
+                _entity.FinalDate = dafaFim;
+                return this;
+            }
+
+            public Builder SetTicketed(DateTimeOffset dafaFim)
+            {
+                _entity.FinalDate = dafaFim;
+
+                return this;
+            }
 
             public Builder SetPlateNumber(string plate)
             {

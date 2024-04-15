@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using RentalManagement.Domain.Constants;
+using RentalManagement.Domain.Extensions;
 using RentalManagement.Domain.Request;
 
 namespace RentalManagement.Application.CommandStack.DeliveryMan.AddDeliveryMan
@@ -14,6 +16,7 @@ namespace RentalManagement.Application.CommandStack.DeliveryMan.AddDeliveryMan
             RuleFor(x => x.NumberLicense).NotNull().NotEmpty().WithMessage("NumberLicense is required");
             RuleFor(x => x.Cnpj).NotNull().NotEmpty().WithMessage("Cnpj is required").IsValidCNPJ();
             RuleFor(x => x.TypeLicense).NotNull().NotEmpty().WithMessage("TypeLicense is required");
+            RuleFor(x => x.Email).EmailAddress().WithMessage("Email inválido").MaximumLength(LengthFields.Email).WithMessage("Email maior que o permitido").When(x => !x.Email.IsNullOrWhitespace());
         }
     }
 }

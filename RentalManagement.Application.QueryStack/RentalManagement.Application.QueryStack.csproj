@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DeliveryMan\DeliveryManQueryHandler.cs~RF19626ab.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>

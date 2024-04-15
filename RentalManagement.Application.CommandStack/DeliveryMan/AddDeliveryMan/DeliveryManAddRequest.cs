@@ -7,6 +7,7 @@ namespace RentalManagement.Domain.Request
     {
         public string NumberLicense { get; set; }
         public TypeLicense TypeLicense { get; set; }
+        public string ImageLicense { get; set; }
         public string Cnpj { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }

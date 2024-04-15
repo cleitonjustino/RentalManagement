@@ -10,5 +10,7 @@
         public const int Five = 5;
         public const int Six = 6;
         public const int Seven = 7;
+        public const int Email = 500;
+        public const int Name = 120;
     }
 }

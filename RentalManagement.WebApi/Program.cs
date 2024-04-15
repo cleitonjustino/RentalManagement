@@ -76,18 +76,23 @@ builder.Services.AddMediatR(cfg =>
     cfg.Lifetime = ServiceLifetime.Scoped;
 });
 
-builder.Services.AddScoped(typeof(IRequestPreProcessor<MotorcycleQuery>), typeof(MotorcycleQueryCustomFilter));
 builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleRequest, MotorcycleResponse>), typeof(MotorcycleRequestHandler));
-builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleQuery, PagedList<MotorcycleReadModel>>), typeof(MotorcycleQueryHandler));
 builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleUpdateRequest, MotorcycleUpdateResponse>), typeof(MotorcycleUpdateRequestHandler));
 builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleRemoveRequest, MotorcycleRemoveResponse>), typeof(MotorcycleRemoveRequestHandler));
 builder.Services.AddScoped(typeof(IRequestHandler<RentMotorcycleRequest, RentMotorcycleResponse>), typeof(RentMotorcycleRequestHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<ReturnRentMotorcycleRequest, ReturnRentMotorcycleResponse>), typeof(ReturnRentMotorcycleRequestHandler));
 
 builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManAddRequest, DeliveryManAddResponse>), typeof(DeliveryManAddRequestHandler));
-builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManQuery, PagedList<DeliveryManReadModel>>), typeof(DeliveryManQueryHandler));
 builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManAddCnhRequest, DeliveryManAddCnhResponse>), typeof(DeliveryManAddCnhRequestHandler));
+
+builder.Services.AddScoped(typeof(IRequestHandler<MotorcycleQuery, PagedList<MotorcycleReadModel>>), typeof(MotorcycleQueryHandler));
+builder.Services.AddScoped(typeof(IRequestHandler<DeliveryManQuery, PagedList<DeliveryManReadModel>>), typeof(DeliveryManQueryHandler));
 builder.Services.AddScoped(typeof(IRequestHandler<PlansQuery, List<string>>), typeof(PlansQueryHandler));
+builder.Services.AddScoped(typeof(IRequestPreProcessor<MotorcycleQuery>), typeof(MotorcycleQueryCustomFilter));
 builder.Services.AddScoped(typeof(IRequestPreProcessor<DeliveryManQuery>), typeof(DeliveryManQueryCustomFilter));
+builder.Services.AddScoped(typeof(IRequestPreProcessor<RentMotoQuery>), typeof(RentMotoQueryCustomFilter));
+builder.Services.AddScoped(typeof(IRequestHandler<RentMotoQuery, List<RentMotoReadModel>>), typeof(RentMotoQueryHandler));
+
 builder.Services.AddScoped<IStorageService, StorageService>();
 
 
