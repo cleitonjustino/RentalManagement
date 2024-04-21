@@ -9,6 +9,7 @@ namespace RentalManagement.Application.QueryStack.Motorcycle
         public string? PlateNumber { get; set; }
         public int PageSize { get; set; }
         public int PageNumber { get; set; }
+        public DateTimeOffset FinalDate { get; set; }
 
         public Expression<Func<Domain.RentMotorcycle, bool>> FilterExpression { get; set; }
     }

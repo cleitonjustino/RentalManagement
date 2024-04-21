@@ -27,7 +27,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
             {
                 var moto = await TakeMotoAvailableAsync(cancellationToken);
 
-                await CheckLicenseIsAllowed();
+                await CheckLicenseIsAllowed(request.IdDeliveryMan);
 
                 var rentMoto = new RentMotorcycle.Builder()
                     .PlateNumber(moto.PlateNumber)
@@ -63,9 +63,9 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
             }
         }
 
-        private async Task CheckLicenseIsAllowed()
+        private async Task CheckLicenseIsAllowed(Guid idDeliveryMan)
         {
-            var qualifiedDriver = await _dbContext.DeliveryMen.AnyAsync(d => d.TypeLicense.Equals(TypeLicense.A) || d.TypeLicense.Equals(TypeLicense.AB));
+            var qualifiedDriver = await _dbContext.DeliveryMen.AnyAsync(d => d.Id.Equals(idDeliveryMan) && (d.TypeLicense.Equals(TypeLicense.A) || d.TypeLicense.Equals(TypeLicense.AB)));
 
             if (!qualifiedDriver)
                 throw new ValidationException(new ValidationItem { Message = "Somente entregadores habilitados na categoria A podem efetuar uma locação" });
@@ -74,7 +74,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
         private async Task<Motorcycle> TakeMotoAvailableAsync(CancellationToken cancellationToken)
         {
             var queryMoto = _dbContext.Motorcycle.Take(10).Where(m => m.Rented == false);
-            var moto = await _dbContext.Motorcycle.FirstOrDefaultAsync(cancellationToken) ?? throw new ValidationException(new ValidationItem { Message = "Não existem motos disponíveis no momento" });
+            var moto = await queryMoto.FirstOrDefaultAsync(cancellationToken) ?? throw new ValidationException(new ValidationItem { Message = "Não existem motos disponíveis no momento" });
             moto.SetRented();
             return moto;
         }

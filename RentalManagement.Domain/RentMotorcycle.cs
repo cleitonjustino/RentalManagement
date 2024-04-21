@@ -17,8 +17,9 @@ namespace RentalManagement.Domain
         public double Price { get; private set; }
         public double Ticketed { get; private set; }
 
-        public double CalculateFine()
+        public double CalculateFine(DateTimeOffset finalDate)
         {
+            FinalDate = finalDate;
             var plans = Plans.ReturnPlans();
 
             double totalDifferenceDays = TotalDifferenceDays();
@@ -64,7 +65,7 @@ namespace RentalManagement.Domain
             var plan = plans.GetValueOrDefault((int)PaymentPlan);
             double finePercentage = plan * percentage;
             double fineAmount = plan + finePercentage;
-            Ticketed = fineAmount * totalDaysLate;
+            Ticketed = fineAmount * Math.Abs(totalDaysLate);
         }
 
         private double CalculateFineForExceedingExpectedDate(double totalDaysLate)

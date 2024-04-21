@@ -35,5 +35,6 @@ namespace RentalManagement.Application.QueryStack.Motorcycle
             }
             return expression;
         }
+
     }
 }

@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
+using MongoFramework.Linq;
 using RentalManagement.Infrastructure;
 
 namespace RentalManagement.Application.QueryStack.Motorcycle
 {
-    public class RentMotoQueryHandler : IRequestHandler<RentMotoQuery,  List<RentMotoReadModel>>
+    public class RentMotoQueryHandler : IRequestHandler<RentMotoQuery, List<RentMotoReadModel>>
     {
         private readonly RentalDbContext _dbContext;
         private readonly ILogger<RentMotoQueryHandler> _logger;
@@ -22,13 +23,16 @@ namespace RentalManagement.Application.QueryStack.Motorcycle
                 var list = new List<RentMotoReadModel>();
                 var queryResult = _dbContext.RentMotorcycle
                .Where(request.FilterExpression);
-              
-                foreach (var entity in queryResult)
+
+                foreach (var entity in await queryResult.ToListAsync(cancellationToken))
                 {
                     list.Add(new RentMotoReadModel
                     {
                         Id = entity.Id,
-                        FineValue = entity.CalculateFine()
+                        FineValue = entity.CalculateFine(request.FinalDate),
+                        ExpectedDate = entity.ExpectedDate,
+                        StartDate = entity.StartDate,   
+                        Plate = entity.PlateNumber
                     });
                 }
 

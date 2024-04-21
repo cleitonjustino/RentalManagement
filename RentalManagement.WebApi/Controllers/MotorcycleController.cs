@@ -6,6 +6,7 @@ using RentalManagement.Domain.Notification;
 using RentalManagement.Domain.Request;
 using RentalManagement.WebApi.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
 
 namespace RentalManagement.WebApi.Controllers
 {
@@ -173,9 +174,9 @@ namespace RentalManagement.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("GetRent")]
-        public async Task<IActionResult> GetRent(string? plate, int pageSize = 10, int pageNumber = 1, CancellationToken token = default)
+        public async Task<IActionResult> GetRent(string? plate, DateTimeOffset finalDate, int pageSize = 10, int pageNumber = 1, CancellationToken token = default)
         {
-            var filter = new RentMotoQuery { PlateNumber = plate, PageSize = pageSize, PageNumber = pageNumber };
+            var filter = new RentMotoQuery { PlateNumber = plate, PageSize = pageSize, PageNumber = pageNumber, FinalDate = finalDate };
             _ = new RentMotoQueryCustomFilter().Process(filter, token);
             var result = await _mediator.Send(filter, token);
 

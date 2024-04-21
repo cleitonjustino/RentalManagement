@@ -28,7 +28,7 @@ namespace RentalManagement.Application.CommandStack.Motorcyle
                 var plans = Plans.ReturnPlans();
                 var rentMoto = _dbContext.RentMotorcycle.FirstOrDefault(x => x.Id == request.IdRent);
 
-                rentMoto?.CalculateFine();
+                rentMoto?.CalculateFine(request.FinalDate);
                 _dbContext.RentMotorcycle.Update(rentMoto);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);

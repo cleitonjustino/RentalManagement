@@ -124,7 +124,7 @@
             "Exclusão de moto através do Id Moto ",
             </summary>
         </member>
-        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.GetRent(System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:RentalManagement.WebApi.Controllers.MotorcycleController.GetRent(System.String,System.DateTimeOffset,System.Int32,System.Int32,System.Threading.CancellationToken)">
             <summary>
             "Busca aluguel da moto através do placa"
             </summary>

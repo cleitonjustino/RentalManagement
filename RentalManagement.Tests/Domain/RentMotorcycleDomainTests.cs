@@ -16,11 +16,10 @@ namespace RentalManagement.Tests.Domain
                 .SetPaymentPlan(PaymentPlans.Plan7Days)
                 .SetStartDate(DateTimeOffset.Now)
                 .SetExpectedDate(DateTimeOffset.Now.AddDays(8))
-                .SetFinalDate(DateTimeOffset.Now.AddDays(9))
                 .Build();
 
             // Act
-            var fine = rentMotorcycle.CalculateFine();
+            var fine = rentMotorcycle.CalculateFine(DateTimeOffset.Now.AddDays(9));
 
             // Assert
             Assert.Equal(sevenDaysWithOneDayLater, fine); 
@@ -36,11 +35,10 @@ namespace RentalManagement.Tests.Domain
                 .SetPaymentPlan(PaymentPlans.Plan15Days)
                 .SetStartDate(DateTimeOffset.Now)
                 .SetExpectedDate(DateTimeOffset.Now.AddDays(16))
-                .SetFinalDate(DateTimeOffset.Now.AddDays(17))
                 .Build();
 
             // Act
-            var fine = rentMotorcycle.CalculateFine();
+            var fine = rentMotorcycle.CalculateFine(DateTimeOffset.Now.AddDays(17));
 
             // Assert
             Assert.Equal(fifteenDaysWithOneDayLater, fine); 
@@ -56,11 +54,10 @@ namespace RentalManagement.Tests.Domain
                 .SetPaymentPlan(PaymentPlans.Plan30Days)
                 .SetStartDate(DateTimeOffset.Now)
                 .SetExpectedDate(DateTimeOffset.Now.AddDays(30))
-                .SetFinalDate(DateTimeOffset.Now.AddDays(32))
                 .Build();
 
             // Act
-            var fine = rentMotorcycle.CalculateFine();
+            var fine = rentMotorcycle.CalculateFine(DateTimeOffset.Now.AddDays(32));
 
             // Assert
             Assert.Equal(thirteenDaysWithOneDayLater, fine); 
