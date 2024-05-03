@@ -83,7 +83,6 @@ namespace RentalManagement.Infrastructure.ExternalServices.Storage
 
             string fileUrl = await _minioClient.PresignedGetObjectAsync(bucket);
 
-
             return fileUrl;
         }
 

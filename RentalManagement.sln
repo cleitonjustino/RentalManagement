@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalManagement.Domain", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalManagement.Infrastructure", "RentalManagement.Infrastructure\RentalManagement.Infrastructure.csproj", "{26B3CF1B-2161-45DA-9E5C-6A71494CBE23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalManagement.Tests", "RentalManagement.Tests\RentalManagement.Tests.csproj", "{4149A78F-5E4C-4436-8FD9-6714820B3449}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalManagement.Tests", "RentalManagement.Tests\RentalManagement.Tests.csproj", "{4149A78F-5E4C-4436-8FD9-6714820B3449}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C279DACB-9A7A-44B7-86F2-D43AF2786282}"
 EndProject

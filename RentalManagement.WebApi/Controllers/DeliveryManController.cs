@@ -91,10 +91,11 @@ namespace RentalManagement.WebApi.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Arquivo é obrigatório");
 
-            if (file.ContentType != "image/png" || file.ContentType != "image/bmp")
+            if (file.ContentType != "image/png" && file.ContentType != "image/bmp")
                 return BadRequest("Tipo de anexo inválido");
 
             var request = new DeliveryManAddCnhRequest();
+            var response = new DeliveryManAddCnhResponse();
 
             try
             {
@@ -104,10 +105,10 @@ namespace RentalManagement.WebApi.Controllers
                     request.ContentType = file.ContentType;
                     request.IdDeliveryMan = idDeliveryman;
 
-                    var result = await _mediator.Send(request);
+                    response = await _mediator.Send(request);
                 }
 
-                return Ok(new { Url = "a" });
+                return Ok(response);
             }
             catch (Exception ex)
             {
