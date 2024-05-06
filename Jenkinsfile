@@ -49,14 +49,7 @@ pipeline {
                     sh "${dotnet} publish --configuration Release --output ./publish"
                 }
             }
-        }
-        
-        stage('Implantar') {
-            steps {
-                // Implantação da aplicação (por exemplo, copiá-la para o servidor)
-                // Você pode adicionar os passos necessários para sua infraestrutura aqui
-            }
-        }
+        }        
     }
     
     post {
