@@ -7,7 +7,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clonar o repositório do Git
-                git 'https://github.com/cleitonjustino/RentalManagement'
+                git 'https://github.com/cleitonjustino/RentalManagement.git'
             }
         }
         
