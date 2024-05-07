@@ -7,7 +7,11 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clonar o repositório do Git
-                git 'https://github.com/cleitonjustino/RentalManagement.git/'
+                //git 'https://github.com/cleitonjustino/RentalManagement.git'
+                script {
+                    // Checkout code without credentials
+                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'your_repository_url']]])
+                }
             }
         }
         
