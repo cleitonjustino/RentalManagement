@@ -20,7 +20,7 @@ pipeline {
                 // Restaurar os pacotes NuGet
                 script {
                  // Grant execute permission to dotnet executable
-                    sh 'chmod +x /var/jenkins_home/tools/io.jenkins.plugins.dotnet.DotNetSDK/dotnet'
+                     sh 'sudo chmod +x /var/jenkins_home/tools/io.jenkins.plugins.dotnet.DotNetSDK/dotnet'
 
                     def dotnet = tool 'dotnet'
                     sh "${dotnet} restore"
