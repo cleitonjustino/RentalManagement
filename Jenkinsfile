@@ -10,7 +10,7 @@ pipeline {
                 //git 'https://github.com/cleitonjustino/RentalManagement.git'
                 script {
                     // Checkout code without credentials
-                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: ''https://github.com/cleitonjustino/RentalManagement.git']]])
+                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/cleitonjustino/RentalManagement.git']]])
                 }
             }
         }
